@@ -22,7 +22,7 @@ class Application
 {
 	uint m_uMeshCount = 10;
 	// Edit: Jonathan Karcher (9/21/2022)
-	static const int meshSize = 7;
+	static const int meshSize = 46;
 	MyMesh* m_pMeshs[meshSize];
 	// end 
 private:
