@@ -61,8 +61,41 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	std::vector<vector3 > vertex;
+	GLfloat theta = 0;
+	GLfloat delta = static_cast<GLfloat>(2.0 * PI / static_cast<GLfloat>(a_nSubdivisions));
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fRadius, sin(theta) * a_fRadius, 0.0f);
+		theta += delta;
+		vertex.push_back(temp);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(ZERO_V3, vertex[(i + 1) % a_nSubdivisions], vertex[i]);
+	}
+
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vector3(0,0, a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+	}
+
+	
+	// x^2/a^2 + y^2/b^2 = 1
+	//float centerPoint = 5;
+
+	// cone
+	// conscept create a circle
+	// create a point and connect
+
+	// cylender
+	// consept create two circles
+	// connect via quads
+
+	// tube
+	// concept create a series of quads 
+
+	//// -------------------------------
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -84,8 +117,45 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
+	a_fHeight *= .5f;
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	
+	std::vector<vector3 > vertex;
+	GLfloat theta = 0;
+	GLfloat delta = static_cast<GLfloat>(2.0 * PI / static_cast<GLfloat>(a_nSubdivisions));
+	// first circle
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fRadius, sin(theta) * a_fRadius, a_fHeight);
+		theta += delta;
+		vertex.push_back(temp);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vector3(0, 0, a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+	}
+	// second circle
+	std::vector<vector3 > vertex2;
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fRadius, sin(theta) * a_fRadius, -a_fHeight);
+		theta += delta;
+		vertex2.push_back(temp);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vector3(0, 0, -a_fHeight), vertex2[(i + 1) % a_nSubdivisions], vertex2[i]);
+	}
+	//first connections
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertex2[(i+1) % a_nSubdivisions], vertex[i], vertex2[i]);
+	}
+	//second connections
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertex2[(i + 1) % a_nSubdivisions], vertex[(i + 1) % a_nSubdivisions], vertex[i]);
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -115,7 +185,79 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	std::vector<vector3 > vertex;
+	GLfloat theta = 0;
+	GLfloat delta = static_cast<GLfloat>(2.0 * PI / static_cast<GLfloat>(a_nSubdivisions));
+	// outer circle lower
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fOuterRadius, sin(theta) * a_fOuterRadius, a_fHeight);
+		theta += delta;
+		vertex.push_back(temp);
+	}
+	// inner circle lower
+	std::vector<vector3 > vertex2;
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fInnerRadius, sin(theta) * a_fInnerRadius, a_fHeight);
+		theta += delta;
+		vertex2.push_back(temp);
+	}
+	// outer circle upper
+	std::vector<vector3 > vertex3;
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fOuterRadius, sin(theta) * a_fOuterRadius, -a_fHeight);
+		theta += delta;
+		vertex3.push_back(temp);
+	}
+	// inner circle upper
+	std::vector<vector3 > vertex4;
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fInnerRadius, sin(theta) * a_fInnerRadius, -a_fHeight);
+		theta += delta;
+		vertex4.push_back(temp);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//AddTri(vector3(vertex2[i].x, vertex2[i].y, a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vector3(vertex4[i].x, vertex4[i].y, -a_fHeight), vertex3[(i + 1) % a_nSubdivisions], vertex3[i]);
+	}
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//AddTri(vector3(vertex[i].x, vertex[i].y, -a_fHeight), vertex2[i], vertex2[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex[i].x, vertex[i].y, -a_fHeight), vertex3[(i + 1) % a_nSubdivisions], vertex3[i]);
+		//AddTri(vector3(vertex[i].x, vertex[i].y, -a_fHeight), vertex4[i], vertex4[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex2[i].x, vertex2[i].y, -a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex2[i].x, vertex2[i].y, -a_fHeight), vertex3[i], vertex3[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex2[i].x, vertex2[i].y, -a_fHeight), vertex4[i], vertex4[(i + 1) % a_nSubdivisions]);
+
+		//AddTri(vector3(vertex3[i].x, vertex3[i].y, -a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex3[i].x, vertex3[i].y, -a_fHeight), vertex2[i], vertex2[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex3[i].x, vertex3[i].y, -a_fHeight), vertex4[i], vertex4[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex4[i].x, vertex4[i].y, -a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex4[i].x, vertex4[i].y, -a_fHeight), vertex2[i], vertex2[(i + 1) % a_nSubdivisions]);
+		//AddTri(vector3(vertex4[i].x, vertex4[i].y, -a_fHeight), vertex3[i], vertex3[(i + 1) % a_nSubdivisions]);
+	}
+
+
+
+	//// inner ring first connector
+	//for (int i = 0; i < a_nSubdivisions; i++)
+	//{
+	//	AddTri(vector3(vertex2[i].x, vertex2[i].y, a_fHeight), vertex2[(i + 1) % a_nSubdivisions], vertex2[i]);
+	//}
+	//// inner ring second connector
+	//for (int i = 0; i < a_nSubdivisions; i++)
+	//{
+	//	//AddTri(vector3(vertex[(i + 1) % a_nSubdivisions].x, vertex2[(i + 1) % a_nSubdivisions].y, a_fHeight), vertex2[(i + 1) % a_nSubdivisions], vertex2[i]);
+	//	//AddTri(vector3(vertex[(i + 1) % a_nSubdivisions].x, vertex[(i + 1) % a_nSubdivisions].y, a_fHeight), vertex2[(i + 1) % a_nSubdivisions], vertex2[i]);
+	//	//AddTri(vertex2[(i + 1) % a_nSubdivisions], vertex[(i + 1) % a_nSubdivisions], vertex[i]);
+	//}
 	// -------------------------------
 
 	// Adding information about color

@@ -17,14 +17,15 @@ void Application::InitVariables(void)
 	m_pCylinder->GenerateCylinder(0.5f, 1.0f, 7, C_YELLOW);
 	m_pTube = new MyMesh();
 	m_pTube->GenerateTube(0.5f, 0.35f, 1.0f, 7, C_GREEN);
-	m_pSphere = new MyMesh();
-	m_pSphere->GenerateSphere(0.5f, 3, C_BLUE);
-	m_pTorus = new MyMesh();
-	m_pTorus->GenerateTorus(0.5f, 0.30f, 7, 7, C_VIOLET);
+	//m_pSphere = new MyMesh();
+	//m_pSphere->GenerateSphere(0.5f, 3, C_BLUE);
+	//m_pTorus = new MyMesh();
+	//m_pTorus->GenerateTorus(0.5f, 0.30f, 7, 7, C_VIOLET);
 
 	//Make Mesh object
 	m_pMesh = new MyMesh();
 	int primitive = 0;
+	primitive = 3;
 	switch (primitive)
 	{
 	default:
@@ -39,12 +40,12 @@ void Application::InitVariables(void)
 	case 3:
 		m_pMesh->GenerateTube(1.0f, 0.7f, 1.0f, 10, C_CYAN);
 		break;
-	case 4:
-		m_pMesh->GenerateSphere(1.0f, 5, C_CYAN);
-		break;
-	case 5:
-		m_pMesh->GenerateTorus(1.0f, 0.6f, 10, 10, C_CYAN);
-		break;
+	//case 4:
+	//	m_pMesh->GenerateSphere(1.0f, 5, C_CYAN);
+	//	break;
+	//case 5:
+	//	m_pMesh->GenerateTorus(1.0f, 0.6f, 10, 10, C_CYAN);
+	//	break;
 	}
 }
 void Application::Update(void)
@@ -92,12 +93,12 @@ void Application::Display(void)
 	m_pTube->Render(m4Projection, m4View, glm::rotate(glm::translate(v3Position), glm::radians(static_cast<float>(dTimer) * 20.0f), AXIS_X));
 
 	//Sphere
-	v3Position = vector3(glm::sin(glm::radians(dAngle * 4)) * 3.0f, glm::cos(glm::radians(dAngle * 4)) * 3.0f, 0.0f);
-	m_pSphere->Render(m4Projection, m4View, glm::rotate(glm::translate(v3Position), glm::radians(static_cast<float>(dTimer) * 20.0f), AXIS_X));
+	//v3Position = vector3(glm::sin(glm::radians(dAngle * 4)) * 3.0f, glm::cos(glm::radians(dAngle * 4)) * 3.0f, 0.0f);
+	//m_pSphere->Render(m4Projection, m4View, glm::rotate(glm::translate(v3Position), glm::radians(static_cast<float>(dTimer) * 20.0f), AXIS_X));
 
 	//Tourus
-	v3Position = vector3(glm::sin(glm::radians(dAngle * 5)) * 3.0f, glm::cos(glm::radians(dAngle * 5)) * 3.0f, 0.0f);
-	m_pTorus->Render(m4Projection, m4View, glm::rotate(glm::translate(v3Position), glm::radians(static_cast<float>(dTimer) * 20.0f), AXIS_X));
+	//v3Position = vector3(glm::sin(glm::radians(dAngle * 5)) * 3.0f, glm::cos(glm::radians(dAngle * 5)) * 3.0f, 0.0f);
+	//m_pTorus->Render(m4Projection, m4View, glm::rotate(glm::translate(v3Position), glm::radians(static_cast<float>(dTimer) * 20.0f), AXIS_X));
 
 	// draw a skybox
 	m_pModelMngr->AddSkyboxToRenderList();
@@ -116,13 +117,13 @@ void Application::Display(void)
 }
 void Application::Release(void)
 {
-	SafeDelete(m_pMesh);
+	//SafeDelete(m_pMesh);
 	SafeDelete(m_pCube);
 	SafeDelete(m_pCone);
 	SafeDelete(m_pCylinder);
 	SafeDelete(m_pTube);
-	SafeDelete(m_pSphere);
-	SafeDelete(m_pTorus);
+	//SafeDelete(m_pSphere);
+	//SafeDelete(m_pTorus);
 
 	//release GUI
 	ShutdownGUI();
