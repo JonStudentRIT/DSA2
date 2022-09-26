@@ -191,7 +191,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	// outer circle lower
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		vector3 temp = vector3(cos(theta) * a_fOuterRadius, sin(theta) * a_fOuterRadius, a_fHeight);
+		vector3 temp = vector3(cos(theta) * a_fOuterRadius, sin(theta) * a_fOuterRadius, a_fHeight*.5f);
 		theta += delta;
 		vertex.push_back(temp);
 	}
@@ -199,7 +199,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	std::vector<vector3 > vertex2;
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		vector3 temp = vector3(cos(theta) * a_fInnerRadius, sin(theta) * a_fInnerRadius, a_fHeight);
+		vector3 temp = vector3(cos(theta) * a_fInnerRadius, sin(theta) * a_fInnerRadius, a_fHeight*.5f);
 		theta += delta;
 		vertex2.push_back(temp);
 	}
@@ -207,7 +207,7 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	std::vector<vector3 > vertex3;
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		vector3 temp = vector3(cos(theta) * a_fOuterRadius, sin(theta) * a_fOuterRadius, -a_fHeight);
+		vector3 temp = vector3(cos(theta) * a_fOuterRadius, sin(theta) * a_fOuterRadius, -a_fHeight*.5f);
 		theta += delta;
 		vertex3.push_back(temp);
 	}
@@ -215,49 +215,51 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	std::vector<vector3 > vertex4;
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		vector3 temp = vector3(cos(theta) * a_fInnerRadius, sin(theta) * a_fInnerRadius, -a_fHeight);
+		vector3 temp = vector3(cos(theta) * a_fInnerRadius, sin(theta) * a_fInnerRadius, -a_fHeight*.5f);
 		theta += delta;
 		vertex4.push_back(temp);
 	}
+
+	// top outer ring
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		//AddTri(vector3(vertex2[i].x, vertex2[i].y, a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+		AddTri(vertex3[(i + 1) % a_nSubdivisions], vertex3[i], vertex4[i]);
 	}
+	// top inner ring
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		AddTri(vector3(vertex4[i].x, vertex4[i].y, -a_fHeight), vertex3[(i + 1) % a_nSubdivisions], vertex3[i]);
+		AddTri(vertex4[(i + 1) % a_nSubdivisions], vertex3[(i + 1) % a_nSubdivisions], vertex4[i]);
 	}
+	// bottom outer ring
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-		//AddTri(vector3(vertex[i].x, vertex[i].y, -a_fHeight), vertex2[i], vertex2[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex[i].x, vertex[i].y, -a_fHeight), vertex3[(i + 1) % a_nSubdivisions], vertex3[i]);
-		//AddTri(vector3(vertex[i].x, vertex[i].y, -a_fHeight), vertex4[i], vertex4[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex2[i].x, vertex2[i].y, -a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex2[i].x, vertex2[i].y, -a_fHeight), vertex3[i], vertex3[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex2[i].x, vertex2[i].y, -a_fHeight), vertex4[i], vertex4[(i + 1) % a_nSubdivisions]);
-
-		//AddTri(vector3(vertex3[i].x, vertex3[i].y, -a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex3[i].x, vertex3[i].y, -a_fHeight), vertex2[i], vertex2[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex3[i].x, vertex3[i].y, -a_fHeight), vertex4[i], vertex4[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex4[i].x, vertex4[i].y, -a_fHeight), vertex[i], vertex[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex4[i].x, vertex4[i].y, -a_fHeight), vertex2[i], vertex2[(i + 1) % a_nSubdivisions]);
-		//AddTri(vector3(vertex4[i].x, vertex4[i].y, -a_fHeight), vertex3[i], vertex3[(i + 1) % a_nSubdivisions]);
+		AddTri(vertex[(i + 1) % a_nSubdivisions], vertex2[i], vertex[i]);
 	}
-
-
-
-	//// inner ring first connector
-	//for (int i = 0; i < a_nSubdivisions; i++)
-	//{
-	//	AddTri(vector3(vertex2[i].x, vertex2[i].y, a_fHeight), vertex2[(i + 1) % a_nSubdivisions], vertex2[i]);
-	//}
-	//// inner ring second connector
-	//for (int i = 0; i < a_nSubdivisions; i++)
-	//{
-	//	//AddTri(vector3(vertex[(i + 1) % a_nSubdivisions].x, vertex2[(i + 1) % a_nSubdivisions].y, a_fHeight), vertex2[(i + 1) % a_nSubdivisions], vertex2[i]);
-	//	//AddTri(vector3(vertex[(i + 1) % a_nSubdivisions].x, vertex[(i + 1) % a_nSubdivisions].y, a_fHeight), vertex2[(i + 1) % a_nSubdivisions], vertex2[i]);
-	//	//AddTri(vertex2[(i + 1) % a_nSubdivisions], vertex[(i + 1) % a_nSubdivisions], vertex[i]);
-	//}
+	// bottom inner ring
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertex2[(i + 1) % a_nSubdivisions], vertex2[i], vertex[(i + 1) % a_nSubdivisions]);
+	}
+	// inner ring first connector
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertex4[(i + 1) % a_nSubdivisions], vertex2[i], vertex2[(i + 1) % a_nSubdivisions]);
+	}
+	// inner ring second connector
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertex4[(i + 1) % a_nSubdivisions], vertex4[i], vertex2[i]);
+	}
+	//outer ring first Connector
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertex3[(i + 1) % a_nSubdivisions], vertex[(i + 1) % a_nSubdivisions], vertex[i]);
+	}
+	// outer ring second Connector
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		AddTri(vertex3[(i + 1) % a_nSubdivisions], vertex[i], vertex3[i]);
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -275,11 +277,13 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	if (a_fInnerRadius > a_fOuterRadius)
 		std::swap(a_fInnerRadius, a_fOuterRadius);
 
+	// level of definition horizontal
 	if (a_nSubdivisionsA < 3)
 		a_nSubdivisionsA = 3;
 	if (a_nSubdivisionsA > 360)
 		a_nSubdivisionsA = 360;
 
+	// level of definition vertical
 	if (a_nSubdivisionsB < 3)
 		a_nSubdivisionsB = 3;
 	if (a_nSubdivisionsB > 360)
@@ -289,7 +293,93 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	std::vector<std::vector<vector3>> rings;
+	for (int i = 0; i < a_nSubdivisionsB; i++)
+	{
+		std::vector<vector3 > vertex;
+		rings.push_back(vertex);
+	}
+	//Note: I ran out of time before i could impliment a_nSubdivisionsB by using a vector of vector of vector3 and 
+	//looping through each a_nSubdivisionA and connecting all of the a_nSubdivisionB in that ring
+	GLfloat theta = 0;
+	GLfloat delta = static_cast<GLfloat>(2.0 * PI / static_cast<GLfloat>(a_nSubdivisionsA));
+	std::vector<vector3 > vertex;
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fInnerRadius, sin(theta) * a_fInnerRadius, 0.25f);
+		theta += delta;
+		vertex.push_back(temp);
+	}
+	std::vector<vector3 > vertex2;
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fOuterRadius, sin(theta) * a_fOuterRadius, 0);
+		theta += delta;
+		vertex2.push_back(temp);
+	}
+	std::vector<vector3 > vertex3;
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fOuterRadius, sin(theta) * a_fOuterRadius, 0);
+		theta += delta;
+		vertex3.push_back(temp);
+	}
+	std::vector<vector3 > vertex4;
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		vector3 temp = vector3(cos(theta) * a_fInnerRadius, sin(theta) * a_fInnerRadius, -0.25f);
+		theta += delta;
+		vertex4.push_back(temp);
+	}
+	std::vector<vector3 > vertex5;
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		vector3 temp = vector3(cos(theta) * (a_fInnerRadius * 0.5f), sin(theta) * (a_fInnerRadius *0.5f), 0);
+		theta += delta;
+		vertex5.push_back(temp);
+	}
+	std::vector<vector3 > vertex6;
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		vector3 temp = vector3(cos(theta) * (a_fInnerRadius * 0.5f), sin(theta) * (a_fInnerRadius * 0.5f), 0);
+		theta += delta;
+		vertex6.push_back(temp);
+	}
+	// outer
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		AddTri(vertex[i], vertex2[(i + 1) % a_nSubdivisionsA], vertex[(i + 1) % a_nSubdivisionsA]);
+	}
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		AddTri(vertex2[i], vertex2[(i + 1) % a_nSubdivisionsA], vertex[i]);
+	}
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		AddTri(vertex3[(i + 1) % a_nSubdivisionsA], vertex3[i], vertex4[(i + 1) % a_nSubdivisionsA]);
+	}
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		AddTri(vertex4[(i + 1) % a_nSubdivisionsA], vertex3[i], vertex4[i]);
+	}
+	// inner
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		AddTri(vertex[i], vertex[(i + 1) % a_nSubdivisionsA], vertex5[(i + 1) % a_nSubdivisionsA]);
+	}
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		AddTri(vertex5[(i + 1) % a_nSubdivisionsA], vertex5[i], vertex[i]);
+	}
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		AddTri(vertex4[i], vertex5[(i + 1) % a_nSubdivisionsA], vertex4[(i + 1) % a_nSubdivisionsA]);
+	}
+	for (int i = 0; i < a_nSubdivisionsA; i++)
+	{
+		AddTri(vertex5[(i + 1) % a_nSubdivisionsA], vertex4[i], vertex5[i]);
+	}
+	
 	// -------------------------------
 
 	// Adding information about color
@@ -314,7 +404,10 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	
+	// sphere plan: make a half circle, rotate by a variable amount of 360deg by a_nSubdivisions
+	// connect the bottom left and bottom right vertexs to the next ring, ignore the top left vertex
+
 	// -------------------------------
 
 	// Adding information about color
