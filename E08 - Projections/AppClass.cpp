@@ -59,21 +59,40 @@ void Application::Display(void)
 		break;
 	case 2:
 		m_pCamera->ResetCamera();
+		// orthographic
+		m_pCamera->SetPerspective(false);
 		break;
 	case 3:
 		m_pCamera->ResetCamera();
+		// redefine up to the world z direction and flip
+		m_pCamera->SetUp(vector3(0.0f, 0.0f, -1.0f));
+		// move the camera
+		m_pCamera->SetPosition(vector3(33.0f, 0.0f, 0.0f));
 		break;
 	case 4:
 		m_pCamera->ResetCamera();
+		// move the camera
+		m_pCamera->SetPosition(vector3(0.0f, 0.0f, -13.0f));
 		break;
 	case 5:
 		m_pCamera->ResetCamera();
+		// set the clipping plains
+		m_pCamera->SetNearFar(vector2(5.0f, 500.0f));
+		// move the camera
+		m_pCamera->SetPosition(vector3(0.0f, 0.0f, -15.0f));
+		break;
 		break;
 	case 6:
 		m_pCamera->ResetCamera();
+		// set the clipping plains
+		m_pCamera->SetNearFar(vector2(0.05f, 10.0f));
+		// move the camera
+		m_pCamera->SetPosition(vector3(0.0f, 0.0f, -15.0f));
 		break;
 	case 7:
 		m_pCamera->ResetCamera();
+		// flip the up direction
+		m_pCamera->SetUp(vector3(0.0f, -1.0f, 0.0f));
 		break;
 	}
 
