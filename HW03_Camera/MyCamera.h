@@ -47,7 +47,6 @@ public:
 	OUTPUT: class object
 	*/
 	MyCamera(void);
-
 	/*
 	USAGE: Constructor with parameters
 	ARGUMENTS:
