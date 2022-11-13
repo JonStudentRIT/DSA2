@@ -5,13 +5,154 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
 	//TODO: Calculate the SAT algorithm I STRONGLY suggest you use the
 	//Real Time Collision detection algorithm for OBB here but feel free to
-	//implement your own solution.
-	return BTXs::eSATResults::SAT_NONE;
+	
+	// array for axis = {x,y,z}
+	vector3 rotAxisA[3] = { m_m4ToWorld[0], m_m4ToWorld[1], m_m4ToWorld[2] };
+	vector3 rotAxisB[3] = { a_pOther->m_m4ToWorld[0], a_pOther->m_m4ToWorld[1], a_pOther->m_m4ToWorld[2] };
+
+	float ra, rb;
+	matrix3 R, AbsR;
+
+	// Compute rotation matrix expressing b in a's coordinate frame
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			R[i][j] = glm::dot(rotAxisA[i], rotAxisB[j]);
+		}
+	}
+
+	// Compute translation vector t
+	vector3 t = vector3(a_pOther->m_m4ToWorld * vector4(a_pOther->m_v3Center, 1.0f)) - vector3(m_m4ToWorld * vector4(m_v3Center, 1.0f));
+	// bring translation into a's coordinate frame
+	t = vector3(glm::dot(t, rotAxisA[0]), glm::dot(t, rotAxisA[1]), glm::dot(t, rotAxisA[2]));
+
+	// Compute common subexpressions. Add in an epsilon term to
+	// counteract arithmetic errors when two edges are parallel and
+	// their cross product is (near) null
+	for (int i = 0; i < 3; i++)
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			AbsR[i][j] = glm::abs(R[i][j]) + 0.000001f;
+		}
+	}
+
+	// Test axes L = A0, L = A1, L = A2
+	for (int i = 0; i < 3; i++) 
+	{
+		ra = m_v3HalfWidth[i];
+		rb = a_pOther->m_v3HalfWidth.x * AbsR[i][0] + a_pOther->m_v3HalfWidth.y * AbsR[i][1] + a_pOther->m_v3HalfWidth.z * AbsR[i][2];
+		if (glm::abs(t[i]) > ra + rb)
+		{
+			// colliding axis was found
+			return 1;
+		}
+	}
+	// Test axes L = B0, L = B1, L = B2
+	for (int i = 0; i < 3; i++) 
+	{
+		ra = m_v3HalfWidth.x * AbsR[0][i] + m_v3HalfWidth.y * AbsR[1][i] + m_v3HalfWidth.z * AbsR[2][i];
+		rb = a_pOther->m_v3HalfWidth[i];
+		if (glm::abs(t[0] * R[0][i] + t[1] * R[1][i] + t[2] * R[2][i]) > ra + rb)
+		{
+			// colliding axis was found
+			return 1;
+		}
+	}
+
+	// Test axis L = A0 x B0
+	ra = m_v3HalfWidth.y * AbsR[2][0] + m_v3HalfWidth.z * AbsR[1][0];
+	rb = a_pOther->m_v3HalfWidth.y * AbsR[0][2] + a_pOther->m_v3HalfWidth.z * AbsR[0][1];
+	if (glm::abs(t[2] * R[1][0] - t[1] * R[2][0]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	// Test axis L = A0 x B1
+	ra = m_v3HalfWidth.y * AbsR[2][1] + m_v3HalfWidth.z * AbsR[1][1];
+	rb = a_pOther->m_v3HalfWidth.x * AbsR[0][2] + a_pOther->m_v3HalfWidth.z * AbsR[0][0];
+	if (glm::abs(t[2] * R[1][1] - t[1] * R[2][1]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	// Test axis L = A0 x B2
+	ra = m_v3HalfWidth.y * AbsR[2][2] + m_v3HalfWidth.z * AbsR[1][2];
+	rb = a_pOther->m_v3HalfWidth.x * AbsR[0][1] + a_pOther->m_v3HalfWidth.y * AbsR[0][0];
+	if (glm::abs(t[2] * R[1][2] - t[1] * R[2][2]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	// Test axis L = A1 x B0
+	ra = m_v3HalfWidth.x * AbsR[2][0] + m_v3HalfWidth.z * AbsR[0][0];
+	rb = a_pOther->m_v3HalfWidth.y * AbsR[1][2] + a_pOther->m_v3HalfWidth.z * AbsR[1][1];
+	if (glm::abs(t[0] * R[2][0] - t[2] * R[0][0]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	// Test axis L = A1 x B1
+	ra = m_v3HalfWidth.x * AbsR[2][1] + m_v3HalfWidth.z * AbsR[0][1];
+	rb = a_pOther->m_v3HalfWidth.x * AbsR[1][2] + a_pOther->m_v3HalfWidth.z * AbsR[1][0];
+	if (glm::abs(t[0] * R[2][1] - t[2] * R[0][1]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	// Test axis L = A1 x B2
+	ra = m_v3HalfWidth.x * AbsR[2][2] + m_v3HalfWidth.z * AbsR[0][2];
+	rb = a_pOther->m_v3HalfWidth.x * AbsR[1][1] + a_pOther->m_v3HalfWidth.y * AbsR[1][0];
+	if (glm::abs(t[0] * R[2][2] - t[2] * R[0][2]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	// Test axis L = A2 x B0
+	ra = m_v3HalfWidth.x * AbsR[1][0] + m_v3HalfWidth.y * AbsR[0][0];
+	rb = a_pOther->m_v3HalfWidth.y * AbsR[2][2] + a_pOther->m_v3HalfWidth.z * AbsR[2][1];
+	if (glm::abs(t[1] * R[0][0] - t[0] * R[1][0]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	// Test axis L = A2 x B1
+	ra = m_v3HalfWidth.x * AbsR[1][1] + m_v3HalfWidth.y * AbsR[0][1];
+	rb = a_pOther->m_v3HalfWidth.x * AbsR[2][2] + a_pOther->m_v3HalfWidth.z * AbsR[2][0];
+	if (glm::abs(t[1] * R[0][1] - t[0] * R[1][1]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	// Test axis L = A2 x B2
+	ra = m_v3HalfWidth.x * AbsR[1][2] + m_v3HalfWidth.y * AbsR[0][2];
+	rb = a_pOther->m_v3HalfWidth.x * AbsR[2][1] + a_pOther->m_v3HalfWidth.y * AbsR[2][0];
+	if (glm::abs(t[1] * R[0][2] - t[0] * R[1][2]) > ra + rb)
+	{
+		// colliding axis was found
+		return 1;
+	}
+
+	//no coliding axis were found
+	return 0;// BTXs::eSATResults::SAT_NONE;
 }
 bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 {
-	//check if spheres are colliding
-	bool bColliding = true;
+	 bool bColliding = true;
+	
+	if (this->m_v3Center.x > 1)
+	{
+		bColliding = false;
+	}
 	/*
 	* We use Bounding Spheres or ARBB as a pre-test to avoid expensive calculations (SAT)
 	* we default bColliding to true here to always fall in the need of calculating
@@ -20,7 +161,12 @@ bool MyRigidBody::IsColliding(MyRigidBody* const a_pOther)
 	if (bColliding) //they are colliding with bounding sphere
 	{
 		uint nResult = SAT(a_pOther);
-
+		//if the result of the sat was not zero
+		if (nResult != 0)
+		{
+			// reset to false
+			bColliding = false;
+		}
 		if (bColliding) //The SAT shown they are colliding
 		{
 			this->AddCollisionWith(a_pOther);
@@ -54,7 +200,7 @@ void MyRigidBody::Init(void)
 	m_v3Center = ZERO_V3;
 	m_v3MinL = ZERO_V3;
 	m_v3MaxL = ZERO_V3;
-
+	
 	m_v3MinG = ZERO_V3;
 	m_v3MaxG = ZERO_V3;
 
