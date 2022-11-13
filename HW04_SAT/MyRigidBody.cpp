@@ -6,7 +6,7 @@ uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 	//TODO: Calculate the SAT algorithm I STRONGLY suggest you use the
 	//Real Time Collision detection algorithm for OBB here but feel free to
 	
-	// array for axis = {x,y,z}
+	// array for axis = {x,y,z} 
 	vector3 rotAxisA[3] = { m_m4ToWorld[0], m_m4ToWorld[1], m_m4ToWorld[2] };
 	vector3 rotAxisB[3] = { a_pOther->m_m4ToWorld[0], a_pOther->m_m4ToWorld[1], a_pOther->m_m4ToWorld[2] };
 
